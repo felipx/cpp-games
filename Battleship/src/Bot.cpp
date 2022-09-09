@@ -37,7 +37,7 @@ Bot::Bot() : Entity()
 }
 
 
-void Bot::set_ships()
+bool Bot::set_ships()
 {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
@@ -88,4 +88,10 @@ void Bot::set_ships()
             step += s;
         }
     }
+    for (i=0; i<17; i++)
+    {
+        if (getPositions_set()[i] == 0)
+            return false;
+    }
+    return true;
 }

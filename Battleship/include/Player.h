@@ -36,8 +36,11 @@ class Player : public Entity
 {
 public:
     Player();
-
+    int getShips_set();
+    bool set_ships() override;
+    void setShips_set();
 private:
+    int ships_set;
     
 };
 

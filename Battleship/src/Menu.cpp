@@ -39,7 +39,7 @@
 Menu* Menu::menu_{ nullptr };
 
 
-Menu::Menu(Controller* c) : State(c), controller(c), option(1)
+Menu::Menu(Controller* controller) : State(controller), option(1)
 {
 }
 
@@ -59,10 +59,12 @@ void Menu::update()
     std::cin >> option;
     if ( std::cin.fail() ) {
         std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (option == 1)
-        controller->standBy();
+        getController()->standBy();
+    else if (option == 4)
+        getController()->setExit(true);
 }
 
 
@@ -70,27 +72,16 @@ void Menu::render()
 {
     clrscr();
     printHeader();
+    std::cout << "\n\n"
+              << "felipx\n"
+              << "https://github.com/felipx\n"
+              << "\n\n\n\n";
     if (option < 1 || option > 4)
         std::cout << "Invalid Answer.\n"
                   << "Select an option:\n" << "1) New Game\n2) demo\n3) Help\n4) Exit\n";
     else
         std::cout << "\nSelect an option:\n" << "1) New Game\n2) demo\n3) Help\n4) Exit\n";
-    //if (option == 3) 
-    //    printHelp();
 }
 
-
-void Menu::printHeader()
-{
-    std::cout << "**************************************************\n"
-              << "**************************************************\n" 
-              << "**                  BATTLESHIP                  **\n"
-              << "**************************************************\n"
-              << "**************************************************\n"
-              << "\n\n"
-              << "felipx\n"
-              << "https://github.com/felipx\n"
-              << "\n\n\n\n";
-}
 
 void Menu::printHelp() {}

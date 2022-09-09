@@ -34,6 +34,10 @@ Entity::Entity() : ships_left(5), carrier(ShipClass::Carrier), battleship(ShipCl
 {
     std::fill_n (positions_set, 17, 0);
     std::fill_n (attacked_positions, 100, 0);
+    attacked_positions[0] = 1;
+    attacked_positions[9] = 1;
+    attacked_positions[10] = 1;
+    attacked_positions[99] = 1;
 }
 
 
@@ -42,12 +46,20 @@ Ship** Entity::getShips()
     return ships;
 }
 
+
 int* Entity::getAttacked_positions()
 {
     return attacked_positions;
 }
 
+
 int* Entity::getPositions_set()
 {
     return positions_set;
+}
+
+
+bool Entity::set_ships()
+{
+    return false;
 }

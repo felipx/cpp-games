@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <limits>
+#include <string>
 #include "Game.h"
 
 #ifdef _WIN32
@@ -39,28 +40,54 @@
 Game* Game::game_{ nullptr };
 
 
-Game::Game(Controller* controller) : State(controller)
-{
-}
+Game::Game(Controller* controller) : State(controller), bot_ready(false), player_ready(false) {}
 
 
 Game* Game::getInstance(Controller* controller)
 {
-	if (game_ == nullptr)
-	{
-		game_ = new Game(controller);
-	}
-	return game_;
+    if (game_ == nullptr)
+    {
+        game_ = new Game(controller);
+    }
+    return game_;
 }
 
 
 void Game::update()
 {
-	int a;
-    std::cin >> a;
-	if ( std::cin.fail() ) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "update from game\n";
+    if (!bot_ready)
+    {
+        bool ready = bot.set_ships();
+        if (!ready)
+            throw std::runtime_error("Bot Initialization Failed");
+        else
+            bot_ready = true;
+    }
+    if (!player_ready)
+    {
+        bool set = player.set_ships();
+        if (set)
+            player.setShips_set();
+        // else cout here????
+        if (player.getShips_set() == 5)
+            player_ready = true;
+    }
+    else
+    {
+        std::string a;
+        std::cin >> a;
+        if ( std::cin.fail() ) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        if (a == "Exit" || a == "exit")
+            getController()->setExit(true);
+        if (a == "Menu" || a == "menu")
+        {
+            reset();
+            getController()->standBy();
+        }
     }
 }
 
@@ -68,40 +95,44 @@ void Game::update()
 void Game::render()
 {
     int i, j;
-	clrscr();
-	j = 1;
-	std::cout << "               Enemy Ships                                                Player Ships             \n";
-    std::cout << " _______________________________________                    _______________________________________\n";
-	for (i=1; i<=1000; i++)
-	{
-        if ( (i%100 == 1) || (i%100 == 41) || (i%100 == 60))
-		    std::cout << "|";
-		else if (i%100 == 0)
-		    std::cout << "|\n";
-		else if ( (i%100 == 3) || (i%100 == 7) || (i%100 == 11) || (i%100 == 15) || (i%100 == 19) || 
-		          (i%100 == 23) || (i%100 == 27) || (i%100 == 31) || (i%100 == 35) || (i%100 == 39) )
-				  {
-					if (player.getAttacked_positions()[i-3*j-(i/100)*90] == 0)
-					{
-						std::cout << "o";
-					}
-					else if (player.getAttacked_positions()[i-3*j-(i/100)*90] == 1)
-					{
-						std::cout << "x";
-					}
-					else if (player.getAttacked_positions()[i-3*j-(i/100)*90] == 2)
-					{
-						std::cout << "-";
-					}
-					else
-					    std::cout << " ";
-					j++;
-					if (j == 11)
-					    j = 1;
-				  }
-		else if ( (i%100 == 62) || (i%100 == 66) || (i%100 == 70) || (i%100 == 74) || (i%100 == 78) || 
-		          (i%100 == 82) || (i%100 == 86) || (i%100 == 90) || (i%100 == 94) || (i%100 == 98) )
-				  {
+    clrscr();
+    j = 1;
+    printHeader();
+    std::cout << "\n                Enemy Ships                                               Player Ships           \n";
+    std::cout << "    1   2   3   4   5   6   7   8   9   10                   1   2   3   4   5   6   7   8   9   10\n";
+    std::cout << "   _______________________________________                  _______________________________________\n";
+    for (i=1; i<=1000; i++)
+    {
+        if ((i%100 == 1) || (i%100 == 58))
+            std::cout << char(65 + i/100);
+        else if ((i%100 == 3) || (i%100 == 43) || (i%100 == 60))
+            std::cout << "|";
+        else if (i%100 == 0)
+            std::cout << "|\n";
+        else if ( (i%100 == 5) || (i%100 == 9) || (i%100 == 13) || (i%100 == 17) || (i%100 == 21) || 
+                  (i%100 == 25) || (i%100 == 29) || (i%100 == 33) || (i%100 == 37) || (i%100 == 41) )
+                {
+                    if (player.getAttacked_positions()[i-2-3*j-(i/100)*90] == 0)
+                    {
+                    	std::cout << "o";
+                    }
+                    else if (player.getAttacked_positions()[i-2-3*j-(i/100)*90] == 1)
+                    {
+                    	std::cout << "x";
+                    }
+                        else if (player.getAttacked_positions()[i-2-3*j-(i/100)*90] == 2)
+                    {
+                        std::cout << "-";
+                    }
+                    else
+                        std::cout << " ";
+                    j++;
+                    if (j == 11)
+                        j = 1;
+                }
+        else if ( (i%100 == 62) || (i%100 == 66) || (i%100 == 70) || (i%100 == 74) || (i%100 == 78) || 
+                  (i%100 == 82) || (i%100 == 86) || (i%100 == 90) || (i%100 == 94) || (i%100 == 98) )
+                  {
 					if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 0)
 					{
 						std::cout << "o";
@@ -120,8 +151,37 @@ void Game::render()
 					if (j == 11)
 					    j = 1;
 				  }
-		else
-		    std::cout << " ";
-	}
-	std::cout << " ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾                    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n";
+        else
+            std::cout << " ";
+    }
+    std::cout << "    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾                 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n";
+    
+    if (!player_ready)
+    {
+        int ships_set = player.getShips_set();
+        switch (ships_set)
+        {
+        case 0:
+            std::cout << "Select start and end position for Carrier Ship (5 positions):" << std::endl;
+            break;
+        case 1:
+            std::cout << "Select start and end position for Battleship Ship (4 positions):" << std::endl;
+            break;
+        case 2:
+            std::cout << "Select start and end position for Cruiser Ship (3 positions):" << std::endl;
+            break;
+        case 3:
+            std::cout << "Select start and end position for Submarine (3 positions):" << std::endl;
+            break;
+        case 4:
+            std::cout << "Select start and end position for Destroyer Ship (2 positions):" << std::endl;
+            break;
+        default:
+            throw std::runtime_error("Player Ships Initialization Error");
+            break;
+        }
+    }
 }
+
+
+void Game::reset() {}

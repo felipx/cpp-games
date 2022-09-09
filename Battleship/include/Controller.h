@@ -36,20 +36,20 @@
 class Controller
 {
 public:
-	Controller(Controller& other) = delete;      // Singleton is not cloneable.
-	void operator=(const Controller&) = delete;  // Singleton is not assignable.
-	static Controller* getInstance();            // Calls constructor if there is no instance created. Otherwise returns pointer to instance.
-	void standBy();
-	void run();
+    ~Controller();
+    Controller(Controller& other) = delete;      // Singleton is not cloneable.
+    void operator=(const Controller&) = delete;  // Singleton is not assignable.
+    static Controller* getInstance();            // Calls constructor if there is no instance created. Otherwise returns pointer to instance.
+    void standBy();
+    void run();
     void init();
     void setState(State*);
-
+    void setExit(bool);
 private:
-	Controller();
-
+    Controller();
 private:
-	static Controller* controller_;
-	State* state;
+    static Controller* controller_;
+    State* state;
     bool exit;
 };
 

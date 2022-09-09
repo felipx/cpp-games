@@ -43,12 +43,11 @@ private:
     Menu(Controller*);
     void render() override;
     void update() override;
-    void printHeader();
+    //void printHeader();
     void printHelp();
 
 private:
     static Menu* menu_;
-    Controller* controller;
     int option;
 };
 

@@ -29,6 +29,7 @@
 #define HEADERS_GAME_
 
 #include "Bot.h"
+#include "Controller.h"
 #include "Player.h"
 #include "State.h"
 
@@ -39,16 +40,17 @@ public:
     Game(Game& other) = delete;             // Singleton is not cloneable.
     void operator=(const Game&) = delete;   // Singleton is not assignable.
     static Game* getInstance(Controller*);  // Calls constructor if there is no instance created. Otherwise returns pointer to instance.
-
 private:
     Game(Controller*);
     void render() override;
     void update() override;
-
+    void reset();
 private:
     static Game* game_;
     Bot bot;
     Player player;
+    bool bot_ready;
+    bool player_ready;
 };
 
 

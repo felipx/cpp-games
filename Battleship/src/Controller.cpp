@@ -32,9 +32,15 @@
 Controller* Controller::controller_{ nullptr };
 
 
-Controller::Controller() : exit(false)
-{
+Controller::Controller() : exit(false) {}
 
+
+Controller::~Controller()
+{
+    State* s = state;
+    standBy();
+    delete s;
+    delete state;
 }
 
 
@@ -49,6 +55,12 @@ Controller* Controller::getInstance()
 void Controller::setState(State* s)
 {
 	state = s;
+}
+
+
+void Controller::setExit(bool e)
+{
+	exit = e;
 }
 
 

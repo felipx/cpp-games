@@ -35,8 +35,11 @@ class State
 {
 public:
     State(Controller*);
+    virtual ~State();
     virtual void render();
     virtual void update();
+    void printHeader();
+    Controller* getController();
 
 private:
     Controller* controller;

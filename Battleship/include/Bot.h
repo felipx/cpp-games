@@ -37,7 +37,9 @@ class Bot : public Entity
 {
 public:
     Bot();
-    void set_ships();
+    bool set_ships() override;
+private:
+    Positions attack_positions;
 };
 
 
