@@ -31,7 +31,6 @@
 #include "Entity.h"
 #include "Ship.h"
 
-
 class Player : public Entity
 {
 public:
@@ -41,7 +40,6 @@ public:
     void setShips_set();
 private:
     int ships_set;
-    
 };
 
 

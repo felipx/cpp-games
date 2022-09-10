@@ -40,7 +40,7 @@
 Game* Game::game_{ nullptr };
 
 
-Game::Game(Controller* controller) : State(controller), bot_ready(false), player_ready(false) {}
+Game::Game(Controller* controller) : State(controller), player(), bot_ready(false), player_ready(false), invalid_answer(false) {}
 
 
 Game* Game::getInstance(Controller* controller)
@@ -55,21 +55,13 @@ Game* Game::getInstance(Controller* controller)
 
 void Game::update()
 {
-    std::cout << "update from game\n";
-    if (!bot_ready)
-    {
-        bool ready = bot.set_ships();
-        if (!ready)
-            throw std::runtime_error("Bot Initialization Failed");
-        else
-            bot_ready = true;
-    }
     if (!player_ready)
     {
-        bool set = player.set_ships();
-        if (set)
+        invalid_answer = false;
+        if (player.set_ships())
             player.setShips_set();
-        // else cout here????
+        else
+            invalid_answer = true;
         if (player.getShips_set() == 5)
             player_ready = true;
     }
@@ -89,13 +81,27 @@ void Game::update()
             getController()->standBy();
         }
     }
+    if (!bot_ready)
+    {
+        bool ready = bot.set_ships();
+        if (!ready)
+            throw std::runtime_error("Bot Initialization Failed");
+        else
+            bot_ready = true;
+    }
+    
 }
 
 
 void Game::render()
 {
-    int i, j;
+    int i, j, k;
     clrscr();
+    //debug
+    for (int g=0; g<17; g++)
+        std::cout << player.getPositions_set()[g] << " ";
+    std::cout << "\n";
+    //debug
     j = 1;
     printHeader();
     std::cout << "\n                Enemy Ships                                               Player Ships           \n";
@@ -133,20 +139,32 @@ void Game::render()
         else if ( (i%100 == 62) || (i%100 == 66) || (i%100 == 70) || (i%100 == 74) || (i%100 == 78) || 
                   (i%100 == 82) || (i%100 == 86) || (i%100 == 90) || (i%100 == 94) || (i%100 == 98) )
                   {
-					if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 0)
-					{
-						std::cout << "o";
-					}
-					else if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 1)
-					{
-						std::cout << "x";
-					}
-					else if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 2)
-					{
-						std::cout << "-";
-					}
-					else
-					    std::cout << " ";
+                    bool set = false;
+                    for (k=0; k<17; k++)
+                    {
+                        if (player.getPositions_set()[k] == i-58-3*j-(i/100)*90)
+                        {
+                            std::cout << "v";
+                            set = true;
+                            break;
+                        }
+                    }
+                    if (!set)
+                        std::cout << "o";
+					//if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 0)
+					//{
+					//	std::cout << "o";
+					//}
+					//else if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 1)
+					//{
+					//	std::cout << "x";
+					//}
+					//else if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 2)
+					//{
+					//	std::cout << "-";
+					//}
+					//else
+					//    std::cout << " ";
 					j++;
 					if (j == 11)
 					    j = 1;
@@ -162,19 +180,39 @@ void Game::render()
         switch (ships_set)
         {
         case 0:
-            std::cout << "Select start and end position for Carrier Ship (5 positions):" << std::endl;
+            if (invalid_answer)
+                std::cout << "Inalid Answer, try again!" << std::endl;
+            else
+                std::cout << std::endl;
+            std::cout << "Select start and end positions for Carrier Ship (5 positions):" << std::endl;
             break;
         case 1:
-            std::cout << "Select start and end position for Battleship Ship (4 positions):" << std::endl;
+            if (invalid_answer)
+                std::cout << "Inalid Answer, try again!" << std::endl;
+            else
+                std::cout << std::endl;
+            std::cout << "Select start and end positions for Battleship Ship (4 positions):" << std::endl;
             break;
         case 2:
-            std::cout << "Select start and end position for Cruiser Ship (3 positions):" << std::endl;
+            if (invalid_answer)
+                std::cout << "Inalid Answer, try again!" << std::endl;
+            else
+                std::cout << std::endl;
+            std::cout << "Select start and end positions for Cruiser Ship (3 positions):" << std::endl;
             break;
         case 3:
-            std::cout << "Select start and end position for Submarine (3 positions):" << std::endl;
+            if (invalid_answer)
+                std::cout << "Inalid Answer, try again!" << std::endl;
+            else
+                std::cout << std::endl;
+            std::cout << "Select start and end positions for Submarine (3 positions):" << std::endl;
             break;
         case 4:
-            std::cout << "Select start and end position for Destroyer Ship (2 positions):" << std::endl;
+            if (invalid_answer)
+                std::cout << "Inalid Answer, try again!" << std::endl;
+            else
+                std::cout << std::endl;
+            std::cout << "Select start and end positions for Destroyer Ship (2 positions):" << std::endl;
             break;
         default:
             throw std::runtime_error("Player Ships Initialization Error");

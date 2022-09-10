@@ -37,15 +37,12 @@ class Menu : public State
 public:
     Menu(Menu& other) = delete;            // Singleton is not cloneable.
     void operator=(const Menu&) = delete;  // Singleton is not assignable.
-    static Menu* getInstance(Controller*);            // Calls constructor if there is no instance created. Otherwise returns pointer to instance.
-
+    static Menu* getInstance(Controller*); // Calls constructor if there is no instance created. Otherwise returns pointer to instance.
 private:
     Menu(Controller*);
     void render() override;
     void update() override;
-    //void printHeader();
     void printHelp();
-
 private:
     static Menu* menu_;
     int option;

@@ -39,18 +39,16 @@
 Menu* Menu::menu_{ nullptr };
 
 
-Menu::Menu(Controller* controller) : State(controller), option(1)
-{
-}
+Menu::Menu(Controller* controller) : State(controller), option(1) {}
 
 
 Menu* Menu::getInstance(Controller* controller)
 {
-	if (menu_ == nullptr)
-	{
-		menu_ = new Menu(controller);
-	}
-	return menu_;
+    if (menu_ == nullptr)
+    {
+        menu_ = new Menu(controller);
+    }
+    return menu_;
 }
 
 
