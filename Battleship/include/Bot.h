@@ -37,9 +37,16 @@ class Bot : public Entity
 {
 public:
     Bot();
+    Positions* getAttack_positions();
+    int getLast_attack();
+    void setLast_attack(int);
     bool set_ships() override;
+    int fire() override;
+    bool stack_position(int);
+    void stack_next(int);
 private:
     Positions attack_positions;
+    int last_attack;
 };
 
 

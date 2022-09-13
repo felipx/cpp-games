@@ -30,7 +30,7 @@
 #include "Positions.h"
 
 
-Positions::Positions()
+Positions::Positions() : positions_stacked(false)
 {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
@@ -72,9 +72,12 @@ Positions::~Positions()
 /*
 * Stack new positions after a ship has been hit. 
 */
-void Positions::stack_positions(std::stack<int>* s)
+//void Positions::stack_positions(std::stack<int>* s)
+void Positions::stack_positions(int position)
 {
-    int position = s->top();
+    if (positions_stacked)
+        return;
+    //int position = s->top();
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> distribution(0,3);
@@ -153,15 +156,46 @@ void Positions::stack_positions(std::stack<int>* s)
         {
             if(!position_set[random])
             {
-                s->push(new_position[random]);
+                positions_queue.front()->push(new_position[random]);
+                //s->push(new_position[random]);
                 position_set[random] = true;
                 positions_left--;
             }
         }
     }
+    positions_stacked = true;
 }
 
 std::queue<std::stack<int>*>* Positions::get_positions_queue()
 {
     return &positions_queue;
 }
+
+
+void Positions::pop_position()
+{
+    if (!positions_queue.front()->empty())
+        positions_queue.front()->pop();
+    if (positions_queue.front()->empty())
+        pop_position_stack();
+}
+
+
+void Positions::pop_position_stack()
+{
+    if (!positions_queue.empty())
+    {
+        std::stack<int>* p = positions_queue.front();
+        positions_queue.pop();
+        delete p;
+    }
+    positions_stacked = false;
+}
+
+
+bool Positions::isStacked()
+{
+    return positions_stacked;
+}
+
+

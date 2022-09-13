@@ -30,6 +30,11 @@
 #include <string>
 #include "Game.h"
 
+//debug
+#include <chrono>
+#include <thread>
+//debug
+
 #ifdef _WIN32
 #include <conio.h>
 #else
@@ -40,7 +45,7 @@
 Game* Game::game_{ nullptr };
 
 
-Game::Game(Controller* controller) : State(controller), player(), bot_ready(false), player_ready(false), invalid_answer(false) {}
+Game::Game(Controller* controller) : State(controller), player(), bot_ready(false), player_ready(false), invalid_answer(false), attack_pos(0) {}
 
 
 Game* Game::getInstance(Controller* controller)
@@ -63,12 +68,15 @@ void Game::update()
         else
             invalid_answer = true;
         if (player.getShips_set() == 5)
+        {
             player_ready = true;
+            render();  // render call
+        }
     }
     else
     {
-        std::string a;
-        std::cin >> a;
+        std::string a = " ";
+        //std::cin >> a;
         if ( std::cin.fail() ) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -89,7 +97,44 @@ void Game::update()
         else
             bot_ready = true;
     }
-    
+    if (player_ready && bot_ready)
+    {
+        if (!bot.getAttack_positions()->isStacked())
+        {
+            attack_pos = bot.fire();
+            bot.setLast_attack(attack_pos);
+        }
+        bool response = player.respond(attack_pos);
+        if (response || bot.getAttack_positions()->isStacked())
+        {
+            if (response)
+                bot.getAttacked_positions()[attack_pos-1] = 1;
+            bot.getAttack_positions()->stack_positions(attack_pos);
+            bool firing = true;
+            render(); // render call
+            while (firing)
+            {
+                attack_pos = bot.fire();
+                if (player.respond(attack_pos))
+                {
+                    bot.stack_next(attack_pos);
+                    bot.getAttacked_positions()[attack_pos-1] = 1;
+                    //bot.setLast_attack(attack_pos);
+                    render(); // render call
+                }
+                else
+                {
+                    bot.getAttacked_positions()[attack_pos-1] = 2;
+                    firing = false;
+                    render(); // render call
+                }
+            }
+        }
+        else
+        {
+            bot.getAttacked_positions()[attack_pos-1] = 2;
+        }
+    }
 }
 
 
@@ -142,29 +187,27 @@ void Game::render()
                     bool set = false;
                     for (k=0; k<17; k++)
                     {
-                        if (player.getPositions_set()[k] == i-58-3*j-(i/100)*90)
+                        if (player.getPositions_set()[k] == i-58-3*j-(i/100)*90 && bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 0)
                         {
                             std::cout << "v";
                             set = true;
                             break;
                         }
+                        if (player.getPositions_set()[k] == i-58-3*j-(i/100)*90 && bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 1)
+                        {
+                            std::cout << "x";
+                            set = true;
+                            break;
+                        }
                     }
                     if (!set)
-                        std::cout << "o";
-					//if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 0)
-					//{
-					//	std::cout << "o";
-					//}
-					//else if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 1)
-					//{
-					//	std::cout << "x";
-					//}
-					//else if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 2)
-					//{
-					//	std::cout << "-";
-					//}
-					//else
-					//    std::cout << " ";
+                    {
+                        //if (player.getPositions_set()[k] != i-58-3*j-(i/100)*90 && bot.getAttacked_positions()[i-58-3*j-(i/100)*90] == 2)
+                        if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 2)
+                            std::cout << "-";
+                        else
+                            std::cout << "o";
+                    }
 					j++;
 					if (j == 11)
 					    j = 1;
@@ -219,6 +262,20 @@ void Game::render()
             break;
         }
     }
+    else
+    {
+        std::cout << attack_pos << " queue size: " << bot.getAttack_positions()->get_positions_queue()->size();
+    }
+    //debug
+    int count = 0;
+    for (int z=0;z<100;z++)
+    {
+        if (bot.getAttacked_positions()[z] != 0)
+            count++;
+    }
+    std::cout << "count: " << count << std::endl;
+    //debug
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 }
 
 

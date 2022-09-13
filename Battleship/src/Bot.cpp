@@ -31,9 +31,25 @@
 #include "Bot.h"
 
 
-Bot::Bot() : Entity()
+Bot::Bot() : Entity(), last_attack(0)
 {    
     set_ships();
+}
+
+Positions* Bot::getAttack_positions()
+{
+    return &attack_positions;
+}
+
+
+int Bot::getLast_attack()
+{
+    return last_attack;
+}
+
+void Bot::setLast_attack(int p)
+{
+    last_attack = p;
 }
 
 
@@ -94,4 +110,58 @@ bool Bot::set_ships()
             return false;
     }
     return true;
+}
+
+
+int Bot::fire()
+{
+    int p;
+    bool fire_ready = false;
+    while (!fire_ready)
+    {
+        for (int i=0; i<100; i++)
+        {
+            if (getAttacked_positions()[attack_positions.get_positions_queue()->front()->top() -1 ] != 0)
+            {
+                attack_positions.pop_position();
+                break;
+            }
+        }
+        fire_ready = true;
+    }
+    p = attack_positions.get_positions_queue()->front()->top();
+    attack_positions.pop_position();
+    return p;
+}
+
+
+bool Bot::stack_position(int p)
+{
+    for (int i=0; i<100; i++)
+    {
+        if (p == getAttacked_positions()[i])
+            return false;
+    }
+    attack_positions.get_positions_queue()->front()->push(p);
+    return true;
+}
+
+
+void Bot::stack_next(int attack_pos)
+{
+    int delta;
+    if (attack_pos-getLast_attack() > 0 && attack_pos-getLast_attack() < 10)
+        delta = 1;
+    if (attack_pos-getLast_attack() >= 10)
+        delta = 10;
+    if (attack_pos-getLast_attack() < 0 && attack_pos-getLast_attack() > -10)
+        delta = -1;
+    if (attack_pos-getLast_attack() <= -10)
+        delta = -10;
+    if (//((attack_pos+(attack_pos-getLast_attack())+1) % 10 != 1) && ((attack_pos+(attack_pos-getLast_attack())-1) % 10 != 0) && 
+        (attack_pos+delta > 0) && (attack_pos+delta < 101))
+    {
+        stack_position(attack_pos+delta);
+        //stack_position(attack_pos+(attack_pos-getLast_attack()));
+    }
 }

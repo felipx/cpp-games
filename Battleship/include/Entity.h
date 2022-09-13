@@ -39,7 +39,8 @@ public:
     int* getPositions_set();
     int* getAttacked_positions();
     virtual bool set_ships();
-
+    virtual int fire();
+    bool respond(int);
 private:
     int positions_set[17];
     int ships_left;

@@ -52,6 +52,7 @@ private:
     bool bot_ready;
     bool player_ready;
     bool invalid_answer;
+    int attack_pos;
 };
 
 

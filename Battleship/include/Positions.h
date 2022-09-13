@@ -38,11 +38,14 @@ public:
     Positions();
     ~Positions();
     std::queue<std::stack<int>*>* get_positions_queue();
-    void stack_positions(std::stack<int>*);
-
+    void pop_position();
+    void pop_position_stack();
+    //void stack_positions(std::stack<int>*);
+    void stack_positions(int);
+    bool isStacked();
 private:
     std::queue<std::stack<int>*> positions_queue;
-
+    bool positions_stacked;
 };
 
 

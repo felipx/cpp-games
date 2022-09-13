@@ -39,7 +39,6 @@ public:
     bool setPosition(int, int);
     int* getPosition();
     int getSize();
-
 private:
     int* position;
     int size;
