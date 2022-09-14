@@ -28,6 +28,7 @@
 #ifndef HEADERS_PLAYER_
 #define HEADERS_PLAYER_
 
+#include <string>
 #include "Entity.h"
 #include "Ship.h"
 
@@ -35,11 +36,9 @@ class Player : public Entity
 {
 public:
     Player();
-    int getShips_set();
     bool set_ships() override;
-    void setShips_set();
-private:
-    int ships_set;
+    int parse_position(std::string);
+    int fire(int) override;
 };
 
 

@@ -72,12 +72,10 @@ Positions::~Positions()
 /*
 * Stack new positions after a ship has been hit. 
 */
-//void Positions::stack_positions(std::stack<int>* s)
 void Positions::stack_positions(int position)
 {
     if (positions_stacked)
         return;
-    //int position = s->top();
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> distribution(0,3);

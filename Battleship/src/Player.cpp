@@ -30,24 +30,14 @@
 #include <string>
 #include "Player.h"
 
-//debug
-#include <chrono>
-#include <thread>
-//debug
 
+Player::Player() : Entity() {} 
 
-Player::Player() : Entity(), ships_set(0) {} 
-
-
-int Player::getShips_set()
-{
-    return ships_set;
-}
 
 // will have to invoke controller from here
 bool Player::set_ships()
 {
-    int p, pos1_n1, pos1_n2, pos2_n1, pos2_n2, p1, p2, orientation;
+    int p, p1, p2, orientation;
     std::string a;
     std::getline(std::cin, a);
     if (std::cin.fail() || a.size() < 5 || a.size() > 7)
@@ -64,45 +54,13 @@ bool Player::set_ships()
     std::string pos1 = a.substr(0,p);
     std::string pos2 = a.substr(p+1);
 
-    // Positions have to be in a-j or A-J range
-    if (!((pos1.data()[0] > 64 && pos1.data()[0] < 75) || (pos1.data()[0] > 96 && pos1.data()[0] < 107)) && 
-        !((pos2.data()[0] > 64 && pos2.data()[0] < 75) || (pos2.data()[0] > 96 && pos2.data()[0] < 107))   )
-        return false;
-    
-    if (pos1.data()[0] > 64 && pos1.data()[0] < 75)
-        pos1_n1 = (int) pos1.data()[0] - 65;
-    else
-        pos1_n1 = (int) pos1.data()[0] - 97; 
+    p1 = parse_position(pos1);
+    p2 = parse_position(pos2);
 
-    try
-    {
-        pos1_n2 = std::stoi(pos1.substr(1));
-    }
-    catch (const std::invalid_argument& ia) 
-    {
-        return false;
-    }
-
-    if (pos2.data()[0] > 64 && pos2.data()[0] < 75)
-        pos2_n1 = (int) pos2.data()[0] - 65;
-    else
-        pos2_n1 = (int) pos2.data()[0] - 97;
-    
-    try
-    {
-        pos2_n2 = std::stoi(pos2.substr(1));
-    }
-    catch (const std::invalid_argument& ia) 
-    {
-        return false;
-    }
-    
-    if (pos1_n1 < 0 || pos1_n1 > 9 || pos1_n2 < 1 || pos1_n2 > 10 || pos2_n1 < 0 || pos2_n1 > 9 || pos2_n2 < 1 || pos2_n2 > 10)
+    if (p1 == -1 || p2 == -1)
         return false;
 
-    p1 = pos1_n1*10 + pos1_n2;
-    p2 = pos2_n1*10 + pos2_n2;
-
+    int ships_set = getShips_set();
     if (ships_set < 3 && p2-p1+1 == 5-ships_set)
         orientation = 0;
     else if (ships_set < 3 && p2-p1+10 == 50-ships_set*10)
@@ -144,7 +102,38 @@ bool Player::set_ships()
 }
 
 
-void Player::setShips_set()
+int Player::parse_position(std::string position)
 {
-    ships_set++;
+    int pos_n1, pos_n2;
+
+    // Positions have to be in a-j or A-J range
+    if (!((position.data()[0] > 64 && position.data()[0] < 75) || (position.data()[0] > 96 && position.data()[0] < 107)))
+        return -1;
+    
+    if (position.data()[0] > 64 && position.data()[0] < 75)
+        pos_n1 = (int) position.data()[0] - 65;
+    else
+        pos_n1 = (int) position.data()[0] - 97; 
+
+    try
+    {
+        pos_n2 = std::stoi(position.substr(1));
+    }
+    catch (const std::invalid_argument& ia) 
+    {
+        return -1;
+    }
+
+    if (pos_n1 < 0 || pos_n1 > 9 || pos_n2 < 1 || pos_n2 > 10)
+        return -1;
+
+    return pos_n1*10 + pos_n2;
+}
+
+
+int Player::fire(int p)
+{
+    if (getAttacked_positions()[p-1] != 0)
+        return 0;
+    return 1;
 }

@@ -40,7 +40,6 @@ public:
     std::queue<std::stack<int>*>* get_positions_queue();
     void pop_position();
     void pop_position_stack();
-    //void stack_positions(std::stack<int>*);
     void stack_positions(int);
     bool isStacked();
 private:

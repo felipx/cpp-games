@@ -32,13 +32,21 @@
 
 
 Bot::Bot() : Entity(), last_attack(0)
-{    
+{
+    attack_positions = new Positions();
     set_ships();
 }
 
+
+Bot::~Bot()
+{
+    delete attack_positions;
+}
+
+
 Positions* Bot::getAttack_positions()
 {
-    return &attack_positions;
+    return attack_positions;
 }
 
 
@@ -46,6 +54,7 @@ int Bot::getLast_attack()
 {
     return last_attack;
 }
+
 
 void Bot::setLast_attack(int p)
 {
@@ -119,18 +128,15 @@ int Bot::fire()
     bool fire_ready = false;
     while (!fire_ready)
     {
-        for (int i=0; i<100; i++)
+        if (getAttacked_positions()[attack_positions->get_positions_queue()->front()->top() -1 ] != 0)
         {
-            if (getAttacked_positions()[attack_positions.get_positions_queue()->front()->top() -1 ] != 0)
-            {
-                attack_positions.pop_position();
-                break;
-            }
+            attack_positions->pop_position();
+            continue;
         }
         fire_ready = true;
     }
-    p = attack_positions.get_positions_queue()->front()->top();
-    attack_positions.pop_position();
+    p = attack_positions->get_positions_queue()->front()->top();
+    attack_positions->pop_position();
     return p;
 }
 
@@ -142,7 +148,7 @@ bool Bot::stack_position(int p)
         if (p == getAttacked_positions()[i])
             return false;
     }
-    attack_positions.get_positions_queue()->front()->push(p);
+    attack_positions->get_positions_queue()->front()->push(p);
     return true;
 }
 
@@ -162,6 +168,12 @@ void Bot::stack_next(int attack_pos)
         (attack_pos+delta > 0) && (attack_pos+delta < 101))
     {
         stack_position(attack_pos+delta);
-        //stack_position(attack_pos+(attack_pos-getLast_attack()));
     }
+}
+
+
+void Bot::reset_positions()
+{
+    delete attack_positions;
+    attack_positions = new Positions();
 }

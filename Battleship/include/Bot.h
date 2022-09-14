@@ -37,6 +37,7 @@ class Bot : public Entity
 {
 public:
     Bot();
+    ~Bot();
     Positions* getAttack_positions();
     int getLast_attack();
     void setLast_attack(int);
@@ -44,8 +45,9 @@ public:
     int fire() override;
     bool stack_position(int);
     void stack_next(int);
+    void reset_positions();
 private:
-    Positions attack_positions;
+    Positions* attack_positions;
     int last_attack;
 };
 

@@ -29,7 +29,7 @@
 #include "Entity.h"
 
 
-Entity::Entity() : ships_left(5), carrier(ShipClass::Carrier), battleship(ShipClass::Battleship), cruiser(ShipClass::Cruiser), submarine(ShipClass::Submarine), 
+Entity::Entity() : ships_left(5), ships_set(0), carrier(ShipClass::Carrier), battleship(ShipClass::Battleship), cruiser(ShipClass::Cruiser), submarine(ShipClass::Submarine), 
             destroyer(ShipClass::Destroyer)
 {
     std::fill_n (positions_set, 17, 0);
@@ -40,6 +40,12 @@ Entity::Entity() : ships_left(5), carrier(ShipClass::Carrier), battleship(ShipCl
 Ship** Entity::getShips()
 {
     return ships;
+}
+
+
+int Entity::getShips_set()
+{
+    return ships_set;
 }
 
 
@@ -55,15 +61,33 @@ int* Entity::getPositions_set()
 }
 
 
+int Entity::getShips_left()
+{
+    return ships_left;
+}
+
+
 bool Entity::set_ships()
 {
     return false;
 }
 
 
+void Entity::setShips_set()
+{
+    ships_set++;
+}
+
+
 int Entity::fire()
 {
     return 0;
+}
+
+
+int Entity::fire(int p)
+{
+    return p;
 }
 
 
@@ -78,8 +102,31 @@ bool Entity::respond(int position)
         for (int i=0; i<s; i++)
         {
             if (p[i] == position)
+            {
+                if (ship->hit())
+                    ships_left--;
                 return true;
+            }
         }
     }
     return false;
+}
+
+
+bool Entity::isDefeated()
+{
+    if (!ships_left)
+        return true;
+    return false;
+}
+
+
+void Entity::reset()
+{
+    ships_left = 5;
+    ships_set = 0;
+    std::fill_n (positions_set, 17, 0);
+    std::fill_n (attacked_positions, 100, 0);
+    for (Ship* ship : ships)
+        ship->reset();
 }

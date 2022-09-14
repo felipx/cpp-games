@@ -45,7 +45,9 @@
 Game* Game::game_{ nullptr };
 
 
-Game::Game(Controller* controller) : State(controller), player(), bot_ready(false), player_ready(false), invalid_answer(false), attack_pos(0) {}
+Game::Game(Controller* controller) : State(controller), player(), bot_ready(false), player_ready(false), invalid_answer(false), 
+                                     bot_attack_pos(0), player_attack_pos(0), bot_last_hit(false), player_last_hit(false), 
+                                     bot_turn(false), game_over(false) {}
 
 
 Game* Game::getInstance(Controller* controller)
@@ -60,6 +62,14 @@ Game* Game::getInstance(Controller* controller)
 
 void Game::update()
 {
+    if (!bot_ready)
+    {
+        bool ready = bot.set_ships();
+        if (!ready)
+            throw std::runtime_error("Bot Initialization Failed");
+        else
+            bot_ready = true;
+    }
     if (!player_ready)
     {
         invalid_answer = false;
@@ -73,67 +83,127 @@ void Game::update()
             render();  // render call
         }
     }
-    else
+    if (player_ready && bot_ready && !game_over)
     {
-        std::string a = " ";
-        //std::cin >> a;
+        // Player attack starts here
+        invalid_answer = false;
+        bot_turn = false;
+        std::string a;
+        std::cin >> a;
         if ( std::cin.fail() ) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         if (a == "Exit" || a == "exit")
+        {
             getController()->setExit(true);
+            return;
+        }
         if (a == "Menu" || a == "menu")
         {
             reset();
             getController()->standBy();
+            return;
         }
-    }
-    if (!bot_ready)
-    {
-        bool ready = bot.set_ships();
-        if (!ready)
-            throw std::runtime_error("Bot Initialization Failed");
-        else
-            bot_ready = true;
-    }
-    if (player_ready && bot_ready)
-    {
-        if (!bot.getAttack_positions()->isStacked())
+        int last_player_pos = player_attack_pos;
+        player_attack_pos = player.parse_position(a);
+        if (player_attack_pos != -1)
         {
-            attack_pos = bot.fire();
-            bot.setLast_attack(attack_pos);
-        }
-        bool response = player.respond(attack_pos);
-        if (response || bot.getAttack_positions()->isStacked())
-        {
-            if (response)
-                bot.getAttacked_positions()[attack_pos-1] = 1;
-            bot.getAttack_positions()->stack_positions(attack_pos);
-            bool firing = true;
-            render(); // render call
-            while (firing)
+            if (!player.fire(player_attack_pos))
             {
-                attack_pos = bot.fire();
-                if (player.respond(attack_pos))
+                invalid_answer = true;
+                player_attack_pos = last_player_pos;
+            }
+            else
+            {
+                if (bot.respond(player_attack_pos))
                 {
-                    bot.stack_next(attack_pos);
-                    bot.getAttacked_positions()[attack_pos-1] = 1;
-                    //bot.setLast_attack(attack_pos);
-                    render(); // render call
+                    player.getAttacked_positions()[player_attack_pos-1] = 1;
+                    player_last_hit = true;
+                    if (bot.isDefeated())
+                    {
+                        game_over = true;
+                        return;
+                    }
+                    render();
                 }
                 else
                 {
-                    bot.getAttacked_positions()[attack_pos-1] = 2;
-                    firing = false;
-                    render(); // render call
+                    player.getAttacked_positions()[player_attack_pos-1] = 2;
+                    player_last_hit = false;
+                    bot_turn = true;
+                    render();
                 }
             }
         }
         else
         {
-            bot.getAttacked_positions()[attack_pos-1] = 2;
+            invalid_answer = true;
+            player_attack_pos = last_player_pos;
+            return;
         }
+
+        // Bot attack starts here
+        if (bot_turn)
+        {
+            if (!bot.getAttack_positions()->isStacked())
+            {
+                bot_attack_pos = bot.fire();
+                bot.setLast_attack(bot_attack_pos);
+                if (player.respond(bot_attack_pos))    
+                {
+                    bot.getAttacked_positions()[bot_attack_pos-1] = 1;
+                    bot_last_hit = true;
+                    bot.getAttack_positions()->stack_positions(bot_attack_pos);
+                    if (player.isDefeated())
+                    {
+                    game_over = true;
+                    return;
+                    }
+                    render(); // render call
+                }
+                else
+                {
+                    bot.getAttacked_positions()[bot_attack_pos-1] = 2;
+                    bot_last_hit = false;
+                    bot_turn = false;
+                    return;
+                }
+            }
+            bool firing = true;
+            while (firing)
+            {
+                bot_attack_pos = bot.fire();
+                if (player.respond(bot_attack_pos))
+                {
+                    bot.getAttacked_positions()[bot_attack_pos-1] = 1;
+                    bot_last_hit = true;
+                    if (player.isDefeated())
+                    {
+                        game_over = true;
+                        return;
+                    }
+                    render(); // render call
+                    bot.stack_next(bot_attack_pos);
+                }
+                else
+                {
+                    bot.getAttacked_positions()[bot_attack_pos-1] = 2;
+                    bot_last_hit = false;
+                    firing = false;
+                    bot_turn = false;
+                }
+            }
+        }
+        bot_turn = false;
+    }
+    if (game_over)
+    {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::string a;
+        std::getline(std::cin, a);
+        reset();
+        getController()->standBy();
     }
 }
 
@@ -142,11 +212,6 @@ void Game::render()
 {
     int i, j, k;
     clrscr();
-    //debug
-    for (int g=0; g<17; g++)
-        std::cout << player.getPositions_set()[g] << " ";
-    std::cout << "\n";
-    //debug
     j = 1;
     printHeader();
     std::cout << "\n                Enemy Ships                                               Player Ships           \n";
@@ -202,7 +267,6 @@ void Game::render()
                     }
                     if (!set)
                     {
-                        //if (player.getPositions_set()[k] != i-58-3*j-(i/100)*90 && bot.getAttacked_positions()[i-58-3*j-(i/100)*90] == 2)
                         if (bot.getAttacked_positions()[i-59-3*j-(i/100)*90] == 2)
                             std::cout << "-";
                         else
@@ -262,21 +326,81 @@ void Game::render()
             break;
         }
     }
-    else
+    
+    if (player_ready && bot_ready && !game_over)
     {
-        std::cout << attack_pos << " queue size: " << bot.getAttack_positions()->get_positions_queue()->size();
+        std::string player_pos;
+        std::string bot_pos;
+        if (player_attack_pos == 0)
+            player_pos = "0";
+        else
+            player_pos = parse_position(player_attack_pos);
+        if (bot_attack_pos == 0)
+            bot_pos = "0";
+        else
+            bot_pos = parse_position(bot_attack_pos);
+        
+        std::cout << "Player last attack: " << player_pos;
+        if (player_last_hit)
+            std::cout << "  HIT - Ships Left: " << bot.getShips_left();
+        else
+            std::cout << "  MISS - Ships Left: " << bot.getShips_left();
+        std::cout << "            " << "Enemy last attack: " << bot_pos;
+        if (bot_last_hit)
+            std::cout << "  HIT - Ships Left: " << player.getShips_left();
+        else
+        std::cout << "  MISS - Ships Left: " << player.getShips_left();
+        std::cout << std::endl;
+        if (!bot_turn)
+        {
+            if (invalid_answer)
+                std::cout << "Inalid Answer, try again!" << std::endl;
+            std::cout << "\nSelect Attack Position: " << std::endl;
+        }
     }
-    //debug
-    int count = 0;
-    for (int z=0;z<100;z++)
+    
+    if (game_over)
     {
-        if (bot.getAttacked_positions()[z] != 0)
-            count++;
+        if (player.isDefeated())
+        {
+            std::cout << "                                            YOU LOST                                                " << std::endl;
+            std::cout << "                                     PRESS ENTER TO CONTINUE                                      " << std::endl;
+        }
+        else if (bot.isDefeated())
+        {
+            std::cout << "                                             YOU WON                                                " << std::endl;
+            std::cout << "                                     PRESS ENTER TO CONTINUE                                      " << std::endl;
+        }
+        else
+            throw std::runtime_error("Game Over Error");
     }
-    std::cout << "count: " << count << std::endl;
-    //debug
-    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 
-void Game::reset() {}
+std::string Game::parse_position(int position)
+{
+    if (char(48+position%10)== '0')
+    {
+        std::string s1(1,char(64+position/10));
+        return s1 + "10";
+    }
+    std::string s1(1,char(65+position/10));
+    char c = char(48+position%10);
+    std::string s2(1,c);
+    return s1+s2; 
+}
+
+
+void Game::reset()
+{
+    bot.reset_positions();
+    bot.reset();
+    player.reset();
+    bot_ready = false;
+    player_ready = false;
+    game_over = false;
+    invalid_answer = false;
+    bot_attack_pos = 0;
+    player_attack_pos = 0;
+}

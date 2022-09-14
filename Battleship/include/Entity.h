@@ -36,14 +36,21 @@ class Entity
 public:
     Entity();
     Ship** getShips();
+    int getShips_set();
     int* getPositions_set();
     int* getAttacked_positions();
+    int getShips_left();
     virtual bool set_ships();
+    void setShips_set();
     virtual int fire();
+    virtual int fire(int);
     bool respond(int);
+    bool isDefeated();
+    void reset();
 private:
     int positions_set[17];
     int ships_left;
+    int ships_set;
     int attacked_positions[100];
     Ship carrier;
     Ship battleship;

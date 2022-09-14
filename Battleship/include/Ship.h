@@ -39,9 +39,12 @@ public:
     bool setPosition(int, int);
     int* getPosition();
     int getSize();
+    bool hit();
+    void reset();
 private:
     int* position;
     int size;
+    int hits_left;
     ShipClass type;
 };
 

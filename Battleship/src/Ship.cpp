@@ -35,22 +35,27 @@ Ship::Ship(ShipClass t)
     case ShipClass::Carrier:
         type = ShipClass::Carrier;
         size = 5;
+        hits_left = size;
         break;
     case ShipClass::Battleship:
         type = ShipClass::Battleship;
         size = 4;
+        hits_left = size;
         break;
     case ShipClass::Cruiser:
         type = ShipClass::Cruiser;
         size = 3;
+        hits_left = size;
         break;
     case ShipClass::Submarine:
         type = ShipClass::Submarine;
         size = 3;
+        hits_left = size;
         break;
     case ShipClass::Destroyer:
         type = ShipClass::Destroyer;
         size = 2;
+        hits_left = size;
         break;
     default:
         throw std::runtime_error("Ship Initialization Failed");
@@ -132,4 +137,22 @@ int* Ship::getPosition()
 int Ship::getSize()
 {
     return size;
+}
+
+
+bool Ship::hit()
+{
+    hits_left--;
+    if (hits_left < 0)
+        throw std::runtime_error("Ship Hits Error");
+    if (!hits_left)
+        return true;
+    else
+        return false;
+}
+
+
+void Ship::reset()
+{
+    hits_left = size;
 }
