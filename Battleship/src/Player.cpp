@@ -34,25 +34,17 @@
 Player::Player() : Entity() {} 
 
 
-// will have to invoke controller from here
-bool Player::set_ships()
+bool Player::set_ships(std::string str)
 {
     int p, p1, p2, orientation;
-    std::string a;
-    std::getline(std::cin, a);
-    if (std::cin.fail() || a.size() < 5 || a.size() > 7)
-    {
-        std::cin.clear();
-        return false;
-    }
-
+    
     // Positions are delimited by " "
-    if (a.find(" ") == std::string::npos)
+    if (str.find(" ") == std::string::npos)
         return false;
     
-    p = a.find(" ");
-    std::string pos1 = a.substr(0,p);
-    std::string pos2 = a.substr(p+1);
+    p = str.find(" ");
+    std::string pos1 = str.substr(0,p);
+    std::string pos2 = str.substr(p+1);
 
     p1 = parse_position(pos1);
     p2 = parse_position(pos2);

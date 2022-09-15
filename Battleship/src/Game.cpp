@@ -36,7 +36,7 @@
 //debug
 
 #ifdef _WIN32
-#include <conio.h>
+//#define clrscr() std::cout <<"\033[H\033[2J\033[3J"
 #else
 #define clrscr() std::cout <<"\033[H\033[2J\033[3J"
 #endif
@@ -73,7 +73,26 @@ void Game::update()
     if (!player_ready)
     {
         invalid_answer = false;
-        if (player.set_ships())
+        std::string str;
+        std::getline(std::cin, str);
+        if (str == "Exit" || str == "exit")
+        {
+            getController()->setExit(true);
+            return;
+        }
+        if (str == "Menu" || str == "menu")
+        {
+            reset();
+            getController()->standBy(0);
+            return;
+        }
+        if (std::cin.fail() || str.size() < 5 || str.size() > 7)
+        {
+            std::cin.clear();
+            invalid_answer = true;
+            return;
+        }
+        if (player.set_ships(str))
             player.setShips_set();
         else
             invalid_answer = true;
@@ -88,25 +107,25 @@ void Game::update()
         // Player attack starts here
         invalid_answer = false;
         bot_turn = false;
-        std::string a;
-        std::cin >> a;
+        std::string str;
+        std::cin >> str;
         if ( std::cin.fail() ) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-        if (a == "Exit" || a == "exit")
+        if (str == "Exit" || str == "exit")
         {
             getController()->setExit(true);
             return;
         }
-        if (a == "Menu" || a == "menu")
+        if (str == "Menu" || str == "menu")
         {
             reset();
-            getController()->standBy();
+            getController()->standBy(0);
             return;
         }
         int last_player_pos = player_attack_pos;
-        player_attack_pos = player.parse_position(a);
+        player_attack_pos = player.parse_position(str);
         if (player_attack_pos != -1)
         {
             if (!player.fire(player_attack_pos))
@@ -203,7 +222,7 @@ void Game::update()
         std::string a;
         std::getline(std::cin, a);
         reset();
-        getController()->standBy();
+        getController()->standBy(0);
     }
 }
 
@@ -279,7 +298,7 @@ void Game::render()
         else
             std::cout << " ";
     }
-    std::cout << "    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾                 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n";
+    std::cout << "   ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾                  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n";
     
     if (!player_ready)
     {
@@ -345,7 +364,7 @@ void Game::render()
             std::cout << "  HIT - Ships Left: " << bot.getShips_left();
         else
             std::cout << "  MISS - Ships Left: " << bot.getShips_left();
-        std::cout << "            " << "Enemy last attack: " << bot_pos;
+        std::cout << "           " << "Enemy last attack: " << bot_pos;
         if (bot_last_hit)
             std::cout << "  HIT - Ships Left: " << player.getShips_left();
         else

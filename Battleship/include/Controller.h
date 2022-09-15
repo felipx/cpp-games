@@ -28,6 +28,7 @@
 #ifndef INCLUDE_CONTROLLER_
 #define INCLUDE_CONTROLLER_
 
+#include "Demo.h"
 #include "Game.h"
 #include "Menu.h"
 #include "State.h"
@@ -40,7 +41,7 @@ public:
     Controller(Controller& other) = delete;      // Singleton is not cloneable.
     void operator=(const Controller&) = delete;  // Singleton is not assignable.
     static Controller* getInstance();            // Calls constructor if there is no instance created. Otherwise returns pointer to instance.
-    void standBy();
+    void standBy(int);
     void run();
     void init();
     void setState(State*);

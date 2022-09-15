@@ -36,7 +36,7 @@ class Player : public Entity
 {
 public:
     Player();
-    bool set_ships() override;
+    bool set_ships(std::string) override;
     int parse_position(std::string);
     int fire(int) override;
 };

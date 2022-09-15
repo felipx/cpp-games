@@ -73,6 +73,12 @@ bool Entity::set_ships()
 }
 
 
+bool Entity::set_ships(std::string)
+{
+    return false;
+}
+
+
 void Entity::setShips_set()
 {
     ships_set++;

@@ -1,4 +1,4 @@
-// Entity.h
+// Demo.h
 
 /***********************************************************************************
  * This file is part of Battleship game                                            *
@@ -25,42 +25,41 @@
  ***********************************************************************************/
 
 
-#ifndef HEADERS_ENTITY_
-#define HEADERS_ENTITY_
+#ifndef HEADERS_DEMO_
+#define HEADERS_DEMO_
 
 #include <string>
-#include "Ship.h"
+#include "Bot.h"
+#include "Controller.h"
+#include "Player.h"
+#include "State.h"
 
 
-class Entity
+class Demo : public State
 {
 public:
-    Entity();
-    Ship** getShips();
-    int getShips_set();
-    int* getPositions_set();
-    int* getAttacked_positions();
-    int getShips_left();
-    virtual bool set_ships();
-    virtual bool set_ships(std::string);
-    void setShips_set();
-    virtual int fire();
-    virtual int fire(int);
-    bool respond(int);
-    bool isDefeated();
+    Demo(Demo& other) = delete;             // Singleton is not cloneable.
+    void operator=(const Demo&) = delete;   // Singleton is not assignable.
+    static Demo* getInstance(Controller*);  // Calls constructor if there is no instance created. Otherwise returns pointer to instance.   
+private:
+    Demo(Controller*);
+    void render() override;
+    void update() override;
+    std::string parse_position(int);
     void reset();
 private:
-    int positions_set[17];
-    int ships_left;
-    int ships_set;
-    int attacked_positions[100];
-    Ship carrier;
-    Ship battleship;
-    Ship cruiser;
-    Ship submarine;
-    Ship destroyer;
-    Ship* ships[5] = {&carrier, &battleship, &cruiser, &submarine, &destroyer};
+    static Demo* demo_;
+    Bot bot1;
+    Bot bot2;
+    bool bot1_ready;
+    bool bot2_ready;
+    int bot1_attack_pos;
+    int bot2_attack_pos;
+    bool bot1_last_hit;
+    bool bot2_last_hit;
+    bool bot2_turn;
+    bool game_over;
 };
 
 
-#endif /* HEADERS_ENTITY_ */
+#endif /* HEADERS_DEMO_ */

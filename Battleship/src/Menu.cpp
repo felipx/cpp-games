@@ -30,7 +30,7 @@
 #include "Menu.h"
 
 #ifdef _WIN32
-#include <conio.h>
+//#define clrscr() std::cout <<"\033[H\033[2J\033[3J"
 #else
 #define clrscr() std::cout <<"\033[H\033[2J\033[3J"
 #endif
@@ -60,8 +60,10 @@ void Menu::update()
     }
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (option == 1)
-        getController()->standBy();
-    else if (option == 4)
+        getController()->standBy(0);
+    if (option == 2)
+        getController()->standBy(1);
+    if (option == 4)
         getController()->setExit(true);
 }
 

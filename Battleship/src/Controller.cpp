@@ -37,9 +37,11 @@ Controller::Controller() : exit(false) {}
 
 Controller::~Controller()
 {
-    State* s = state;
-    standBy();
-    delete s;
+    state = Game::getInstance(this);
+    delete state;
+	state = Demo::getInstance(this);
+	delete state;
+	state = Menu::getInstance(this);
     delete state;
 }
 
@@ -70,13 +72,16 @@ void Controller::init()
 }
 
 
-void Controller::standBy()
+void Controller::standBy(int c)
 {
 	if (typeid(Menu).hash_code() == typeid(*state).hash_code())
 	{
-		state = Game::getInstance(this);
+		if (c == 0)
+		    state = Game::getInstance(this);
+		else
+		    state = Demo::getInstance(this);
 	}
-	else if (typeid(Game).hash_code() == typeid(*state).hash_code())
+	else
 	{
 		state = Menu::getInstance(this);
 	}

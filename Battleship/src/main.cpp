@@ -31,7 +31,7 @@
 int main (void)
 {
     Controller* controller = Controller::getInstance();
-	controller->init();
-	controller->run();
-	delete controller;
+    controller->init();
+    controller->run();
+    delete controller;
 }
