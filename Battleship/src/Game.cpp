@@ -25,18 +25,16 @@
  ***********************************************************************************/
 
 
+#include <chrono>
 #include <iostream>
 #include <limits>
 #include <string>
-#include "Game.h"
-
-//debug
-#include <chrono>
 #include <thread>
-//debug
+#include "Game.h"
 
 #ifdef _WIN32
 //#define clrscr() std::cout <<"\033[H\033[2J\033[3J"
+#define clrscr() system("cls")
 #else
 #define clrscr() std::cout <<"\033[H\033[2J\033[3J"
 #endif
@@ -298,7 +296,11 @@ void Game::render()
         else
             std::cout << " ";
     }
+    #ifdef _WIN32
+    std::cout << "   ---------------------------------------                  ---------------------------------------\n";
+    #else
     std::cout << "   ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾                  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n";
+    #endif
     
     if (!player_ready)
     {

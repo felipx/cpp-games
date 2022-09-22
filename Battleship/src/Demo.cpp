@@ -25,18 +25,16 @@
  ***********************************************************************************/
 
 
+#include <chrono>
 #include <iostream>
 #include <limits>
 #include <string>
-#include "Demo.h"
-
-//debug
-#include <chrono>
 #include <thread>
-//debug
+#include "Demo.h"
 
 #ifdef _WIN32
 //#define clrscr() std::cout <<"\033[H\033[2J\033[3J"
+#define clrscr() system("cls")
 #else
 #define clrscr() std::cout <<"\033[H\033[2J\033[3J"
 #endif
@@ -190,7 +188,6 @@ void Demo::update()
     }
     if (game_over)
     {
-        //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::string a;
         std::getline(std::cin, a);
         reset();
@@ -279,7 +276,11 @@ void Demo::render()
         else
             std::cout << " ";
     }
+    #ifdef _WIN32
+    std::cout << "   ---------------------------------------                  ---------------------------------------\n";
+    #else
     std::cout << "   ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾                  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n";
+    #endif
     
     
     if (bot1_ready && bot2_ready && !game_over)

@@ -17,8 +17,7 @@ endif()
 include_directories(include)
 
 # .cpp files
-#add_executable (main "src/main.cpp" "src/Controller.cpp" "src/State.cpp" "src/Game.cpp" "src/Menu.cpp")
-add_executable (main "src/main.cpp" "src/Controller.cpp" "src/State.cpp" "src/Game.cpp" "src/Bot.cpp" "src/Positions.cpp" "src/Menu.cpp" "src/Ship.cpp" "src/Player.cpp" "src/Entity.cpp")
+add_executable (main "src/main.cpp" "src/Bot.cpp" "src/Controller.cpp" "src/Demo.cpp" "src/Entity.cpp" "src/Game.cpp" "src/Menu.cpp" "src/Player.cpp" "src/Positions.cpp" "src/Ship.cpp" "src/State.cpp")
 
 # TESTS
-add_subdirectory (tests)
+#add_subdirectory (tests)

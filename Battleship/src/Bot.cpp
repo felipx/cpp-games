@@ -64,8 +64,8 @@ void Bot::setLast_attack(int p)
 
 bool Bot::set_ships()
 {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator(seed);
+    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator((unsigned int) seed);
     std::uniform_int_distribution<int> position_distribution(1,100);
     std::uniform_int_distribution<int> orientation_distribution(0,1);
     int random_position, random_orientation;
@@ -158,12 +158,14 @@ void Bot::stack_next(int attack_pos)
     int delta;
     if (attack_pos-getLast_attack() > 0 && attack_pos-getLast_attack() < 10)
         delta = 1;
-    if (attack_pos-getLast_attack() >= 10)
+    else if (attack_pos-getLast_attack() >= 10)
         delta = 10;
-    if (attack_pos-getLast_attack() < 0 && attack_pos-getLast_attack() > -10)
+    else if (attack_pos-getLast_attack() < 0 && attack_pos-getLast_attack() > -10)
         delta = -1;
-    if (attack_pos-getLast_attack() <= -10)
+    else if (attack_pos-getLast_attack() <= -10)
         delta = -10;
+    else
+        return;
     if (//((attack_pos+(attack_pos-getLast_attack())+1) % 10 != 1) && ((attack_pos+(attack_pos-getLast_attack())-1) % 10 != 0) && 
         (attack_pos+delta > 0) && (attack_pos+delta < 101))
     {

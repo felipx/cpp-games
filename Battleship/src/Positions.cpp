@@ -32,8 +32,8 @@
 
 Positions::Positions() : positions_stacked(false)
 {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator(seed);
+    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator((unsigned int) seed);
     std::uniform_int_distribution<int> distribution(1,100);
     int random;
 
@@ -76,8 +76,8 @@ void Positions::stack_positions(int position)
 {
     if (positions_stacked)
         return;
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator(seed);
+    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator((unsigned int) seed);
     std::uniform_int_distribution<int> distribution(0,3);
     int random, positions_left, i, j;
     int new_position[4] = {position+1, position-1, position+10, position-10};

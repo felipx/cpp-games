@@ -31,6 +31,7 @@
 
 #ifdef _WIN32
 //#define clrscr() std::cout <<"\033[H\033[2J\033[3J"
+#define clrscr() system("cls")
 #else
 #define clrscr() std::cout <<"\033[H\033[2J\033[3J"
 #endif

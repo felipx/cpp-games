@@ -42,7 +42,7 @@ bool Player::set_ships(std::string str)
     if (str.find(" ") == std::string::npos)
         return false;
     
-    p = str.find(" ");
+    p = (int) str.find(" ");
     std::string pos1 = str.substr(0,p);
     std::string pos2 = str.substr(p+1);
 
@@ -52,20 +52,20 @@ bool Player::set_ships(std::string str)
     if (p1 == -1 || p2 == -1)
         return false;
 
-    int ships_set = getShips_set();
-    if (ships_set < 3 && p2-p1+1 == 5-ships_set)
+    int ships_positioned = getShips_set();
+    if (ships_positioned < 3 && p2-p1+1 == 5-ships_positioned)
         orientation = 0;
-    else if (ships_set < 3 && p2-p1+10 == 50-ships_set*10)
+    else if (ships_positioned < 3 && p2-p1+10 == 50-ships_positioned*10)
         orientation = 1;
-    else if (ships_set >= 3 && p2-p1+1 == 5-ships_set+1)
+    else if (ships_positioned >= 3 && p2-p1+1 == 5-ships_positioned+1)
         orientation = 0;
-    else if(ships_set >= 3 && p2-p1+10 == 50-ships_set*10+10)
+    else if(ships_positioned >= 3 && p2-p1+10 == 50-ships_positioned*10+10)
         orientation = 1;
     else
         return false;
     
     int i, j;
-    int s = getShips()[ships_set]->getSize();
+    int s = getShips()[ships_positioned]->getSize();
     for (i=0; i<17; i++)
     {
         for (j=0; j<s; j++)
@@ -78,17 +78,17 @@ bool Player::set_ships(std::string str)
     }
 
     bool ship_set;
-    ship_set =  getShips()[ships_set]->setPosition(p1, orientation);
+    ship_set =  getShips()[ships_positioned]->setPosition(p1, orientation);
      
     if (!ship_set)
         return false;
 
     int step = 0;
-    for (i=0; i<ships_set; i++)
+    for (i=0; i<ships_positioned; i++)
         step += getShips()[i]->getSize();
     for (i=step, j=0; j<s; i++, j++)
     {
-        getPositions_set()[i] = getShips()[ships_set]->getPosition()[j];
+        getPositions_set()[i] = getShips()[ships_positioned]->getPosition()[j];
     }
     return true;
 }
@@ -113,6 +113,7 @@ int Player::parse_position(std::string position)
     }
     catch (const std::invalid_argument& ia) 
     {
+        std::cerr << "Invalid argument: " << ia.what() << '\n';
         return -1;
     }
 

@@ -125,7 +125,7 @@ bool Ship::setPosition(int p, int orientation)
         }
         return true;
     }
-    return false;
+    //return false;
 }
 
 
