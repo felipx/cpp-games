@@ -32,7 +32,10 @@
 int main(void)
 {
     Positions positions;
-    //std::queue<std::stack<int>*>* positions_queue = positions.get_positions_queue();
+    while (!positions.get_positions_queue()->empty())
+    {
+        positions.pop_position_stack();
+    }
     
     std::stack<int>* position5 = new std::stack<int>;
     position5->push(5);
@@ -53,174 +56,183 @@ int main(void)
     std::stack<int>* position65 = new std::stack<int>;
     position65->push(65);
 
-    positions.stack_positions(position5);
-    if (position5->size() != 4)
+    positions.get_positions_queue()->push(position5);
+    positions.stack_positions(5);
+    if (positions.get_positions_queue()->front()->size() != 4)
     {
         std::cout << "stackPositionsTest Failed on position5" << std::endl;
         return -1;
     }
-    std::cout << "position5 stack size: " << position5->size() << " - values: ";
-    while (!position5->empty())
+    std::cout << "position5 stack size: " << positions.get_positions_queue()->front()->size() << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position5->top() == 4 || position5->top() == 6 || position5->top() == 15 || position5->top() == 5))
+        if (!(positions.get_positions_queue()->front()->top() == 4 || positions.get_positions_queue()->front()->top() == 6 || positions.get_positions_queue()->front()->top() == 15 || positions.get_positions_queue()->front()->top() == 5))
         {
             std::cout << "\nstackPositionsTest Failed on position5" << std::endl;
             return -1;
         }
-        std::cout << position5->top() << " ";
-        position5->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 
-    positions.stack_positions(position95);
-    if (position95->size() != 4)
+    positions.get_positions_queue()->push(position95);
+    positions.stack_positions(95);
+    if (positions.get_positions_queue()->front()->size() != 4)
     {
         std::cout << "stackPositionsTest Failed on position95" << std::endl;
         return -1;
     }
-    std::cout << "position95 stack size: " << position95->size() << " - values: ";
-    while (!position95->empty())
+    std::cout << "position95 stack size: " << positions.get_positions_queue()->front()->size() << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position95->top() == 94 || position95->top() == 96 || position95->top() == 85 || position95->top() == 95))
+        if (!(positions.get_positions_queue()->front()->top() == 94 || positions.get_positions_queue()->front()->top() == 96 || positions.get_positions_queue()->front()->top() == 85 || positions.get_positions_queue()->front()->top() == 95))
         {
             std::cout << "\nstackPositionsTest Failed on position95" << std::endl;
             return -1;
         }
-        std::cout << position95->top() << " ";
-        position95->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 
-    positions.stack_positions(position51);
-    if (position51->size() != 4)
+    positions.get_positions_queue()->push(position51);
+    positions.stack_positions(51);
+    if (positions.get_positions_queue()->front()->size() != 4)
     {
         std::cout << "stackPositionsTest Failed on position51" << std::endl;
         return -1;
     }
-    std::cout << "position51 stack size: " << position51->size() << " - values: ";
-    while (!position51->empty())
+    std::cout << "position51 stack size: " << positions.get_positions_queue()->front()->size() << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position51->top() == 41 || position51->top() == 61 || position51->top() == 52 || position51->top() == 51))
+        if (!(positions.get_positions_queue()->front()->top() == 41 || positions.get_positions_queue()->front()->top() == 61 || positions.get_positions_queue()->front()->top() == 52 || positions.get_positions_queue()->front()->top() == 51))
         {
             std::cout << "\nstackPositionsTest Failed on position51" << std::endl;
             return -1;
         }
-        std::cout << position51->top() << " ";
-        position51->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 
-    positions.stack_positions(position50);
-    if (position50->size() != 4)
+    positions.get_positions_queue()->push(position50);
+    positions.stack_positions(50);
+    if (positions.get_positions_queue()->front()->size()  != 4)
     {
         std::cout << "stackPositionsTest Failed on position50" << std::endl;
         return -1;
     }
-    std::cout << "position50 stack size: " << position50->size() << " - values: ";
-    while (!position50->empty())
+    std::cout << "position50 stack size: " << positions.get_positions_queue()->front()->size()  << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position50->top() == 40 || position50->top() == 60 || position50->top() == 49 || position50->top() == 50))
+        if (!(positions.get_positions_queue()->front()->top() == 40 || positions.get_positions_queue()->front()->top() == 60 || positions.get_positions_queue()->front()->top() == 49 || positions.get_positions_queue()->front()->top() == 50))
         {
             std::cout << "\nstackPositionsTest Failed on position50" << std::endl;
             return -1;
         }
-        std::cout << position50->top() << " ";
-        position50->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 
-    positions.stack_positions(position1);
-    if (position1->size() != 3)
+    positions.get_positions_queue()->push(position1);
+    positions.stack_positions(1);
+    if (positions.get_positions_queue()->front()->size() != 3)
     {
         std::cout << "stackPositionsTest Failed on position1" << std::endl;
         return -1;
     }
-    std::cout << "position1 stack size: " << position1->size() << " - values: ";
-    while (!position1->empty())
+    std::cout << "position1 stack size: " << positions.get_positions_queue()->front()->size() << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position1->top() == 2 || position1->top() == 11 || position1->top() == 1))
+        if (!(positions.get_positions_queue()->front()->top() == 2 || positions.get_positions_queue()->front()->top() == 11 || positions.get_positions_queue()->front()->top() == 1))
         {
             std::cout << "\nstackPositionsTest Failed on position1" << std::endl;
             return -1;
         }
-        std::cout << position1->top() << " ";
-        position1->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 
-    positions.stack_positions(position10);
-    if (position10->size() != 3)
+    positions.get_positions_queue()->push(position10);
+    positions.stack_positions(10);
+    if (positions.get_positions_queue()->front()->size() != 3)
     {
         std::cout << "stackPositionsTest Failed on position10" << std::endl;
         return -1;
     }
-    std::cout << "position10 stack size: " << position10->size() << " - values: ";
-    while (!position10->empty())
+    std::cout << "position10 stack size: " << positions.get_positions_queue()->front()->size() << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position10->top() == 9 || position10->top() == 20 || position10->top() == 10))
+        if (!(positions.get_positions_queue()->front()->top() == 9 || positions.get_positions_queue()->front()->top() == 20 || positions.get_positions_queue()->front()->top() == 10))
         {
             std::cout << "\nstackPositionsTest Failed on position10" << std::endl;
             return -1;
         }
-        std::cout << position10->top() << " ";
-        position10->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 
-    positions.stack_positions(position91);
-    if (position91->size() != 3)
+    positions.get_positions_queue()->push(position91);
+    positions.stack_positions(91);
+    if (positions.get_positions_queue()->front()->size() != 3)
     {
         std::cout << "stackPositionsTest Failed on position91" << std::endl;
         return -1;
     }
-    std::cout << "position91 stack size: " << position91->size() << " - values: ";
-    while (!position91->empty())
+    std::cout << "position91 stack size: " << positions.get_positions_queue()->front()->size() << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position91->top() == 81 || position91->top() == 92 || position91->top() == 91))
+        if (!(positions.get_positions_queue()->front()->top() == 81 || positions.get_positions_queue()->front()->top() == 92 || positions.get_positions_queue()->front()->top() == 91))
         {
             std::cout << "\nstackPositionsTest Failed on position91" << std::endl;
             return -1;
         }
-        std::cout << position91->top() << " ";
-        position91->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 
-    positions.stack_positions(position100);
-    if (position100->size() != 3)
+    positions.get_positions_queue()->push(position100);
+    positions.stack_positions(100);
+    if (positions.get_positions_queue()->front()->size() != 3)
     {
         std::cout << "stackPositionsTest Failed on position100" << std::endl;
         return -1;
     }
-    std::cout << "position100 stack size: " << position100->size() << " - values: ";
-    while (!position100->empty())
+    std::cout << "position100 stack size: " << positions.get_positions_queue()->front()->size() << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position100->top() == 90 || position100->top() == 99 || position100->top() == 100))
+        if (!(positions.get_positions_queue()->front()->top() == 90 || positions.get_positions_queue()->front()->top() == 99 || positions.get_positions_queue()->front()->top() == 100))
         {
             std::cout << "\nstackPositionsTest Failed on position100" << std::endl;
             return -1;
         }
-        std::cout << position100->top() << " ";
-        position100->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 
-    positions.stack_positions(position65);
-    if (position65->size() != 5)
+    positions.get_positions_queue()->push(position65);
+    positions.stack_positions(65);
+    if (positions.get_positions_queue()->front()->size() != 5)
     {
         std::cout << "stackPositionsTest Failed on position65" << std::endl;
         return -1;
     }
-    std::cout << "position65 stack size: " << position65->size() << " - values: ";
-    while (!position65->empty())
+    std::cout << "position65 stack size: " << positions.get_positions_queue()->front()->size() << " - values: ";
+    while (!positions.get_positions_queue()->empty())
     {
-        if (!(position65->top() == 64 || position65->top() == 66 || position65->top() == 55 || position65->top() == 75 || position65->top() == 65))
+        if (!(positions.get_positions_queue()->front()->top() == 64 || positions.get_positions_queue()->front()->top() == 66 || positions.get_positions_queue()->front()->top() == 55 || positions.get_positions_queue()->front()->top() == 75 || position65->top() == 65))
         {
             std::cout << "\nstackPositionsTest Failed on position65" << std::endl;
             return -1;
         }
-        std::cout << position65->top() << " ";
-        position65->pop();
+        std::cout << positions.get_positions_queue()->front()->top() << " ";
+        positions.pop_position();
     }
     std::cout << std::endl;
 

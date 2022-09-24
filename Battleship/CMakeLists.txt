@@ -20,4 +20,4 @@ include_directories(include)
 add_executable (main "src/main.cpp" "src/Bot.cpp" "src/Controller.cpp" "src/Demo.cpp" "src/Entity.cpp" "src/Game.cpp" "src/Menu.cpp" "src/Player.cpp" "src/Positions.cpp" "src/Ship.cpp" "src/State.cpp")
 
 # TESTS
-#add_subdirectory (tests)
+add_subdirectory (tests)
